@@ -37,11 +37,11 @@ export default function App() {
 
       <div className="absolute top-0 left-0 right-0 z-20 bg-linear-to-b from-slate-900 to-transparent p-6 pointer-events-none">
         <div className="max-w-md pointer-events-auto">
-          <h1 className="text-2xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4">
             3D Model Editor
           </h1>
 
-          <div className="space-y-3 bg-slate-800 p-4 rounded-lg">
+          <div className="space-y-3 bg-slate-800 p-4 rounded-lg border-slate-800">
             <div>
               <label className="text-sm font-medium text-white block mb-2">
                 Upload GLB Model
@@ -50,22 +50,24 @@ export default function App() {
                 type="file"
                 accept=".glb,.gltf"
                 onChange={handleFileUpload}
-                className="text-sm"
+                className="text-sm text-white file:text-white cursor-pointer"
               />
             </div>
 
             <div className="text-xs text-slate-400 bg-slate-700 p-2 rounded">
-              <p className="font-semibold mb-1">Controls:</p>
-              <p>• Left Mouse: Rotate</p>
-              <p>• Right Mouse/Middle: Pan</p>
-              <p>• Scroll: Zoom</p>
-              <p>• Click Model: Add Hotspot</p>
+              <h4 className="font-semibold mb-1">Controls:</h4>
+              <ul className="list-disc list-inside">
+                <li>Left Mouse: Rotate</li>
+                <li>Right Mouse/Middle: Pan</li>
+                <li>Scroll: Zoom</li>
+                <li>Click Model: Add Hotspot</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 right-0 z-20">
+      <div className="absolute bottom-0 right-0 z-20 max-h-screen overflow-auto">
         <HotspotManager
           hotspots={hotspots}
           onUpdateHotspot={handleUpdateHotspot}

@@ -76,7 +76,7 @@ export const Editor3D = ({
   if (!modelUrl) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-slate-900">
-        <p className="text-red-500 text-4xl font-bold">
+        <p className="text-white text-4xl font-bold">
           Upload a model to get started
         </p>
       </div>

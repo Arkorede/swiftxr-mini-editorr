@@ -64,7 +64,7 @@ export const HotspotManager = ({
                     value={editingLabel}
                     onChange={(e) => setEditingLabel(e.target.value)}
                     placeholder="Label"
-                    className="text-sm"
+                    className="text-sm text-white"
                     autoFocus
                   />
                   <div className="flex gap-2">
@@ -80,7 +80,7 @@ export const HotspotManager = ({
                       size="sm"
                       variant="outline"
                       onClick={cancelEdit}
-                      className="flex-1 text-xs bg-transparent"
+                      className="flex-1 text-xs bg-red-400 text-white border-0"
                     >
                       Cancel
                     </Button>
@@ -101,7 +101,7 @@ export const HotspotManager = ({
                     </div>
                     <button
                       onClick={() => onDeleteHotspot(hotspot.id)}
-                      className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                      className="text-slate-400 hover:text-red-400 transition-colors p-1 cursor-pointer"
                       title="Delete hotspot"
                     >
                       <Trash2 size={16} />
