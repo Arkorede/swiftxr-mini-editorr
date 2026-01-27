@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# SwiftXR Mini Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight, web-based 3D model editor built with React, Three.js, and TypeScript. This application allows users to upload `.glb` models, view them in a 3D environment, and interactively add, edit, and manage hotspots on the model surface.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **3D Model Visualization**: Seamlessly load and view `.glb` 3D files.
+- **Interactive Hotspots**:
+  - **Click to Add**: simply click anywhere on the 3D model to place a hotspot.
+  - **Edit Labels**: Real-time identification and labeling of hotspots.
+  - **Manage**: Update texts or delete hotspots as needed.
+- **Camera Controls**: Orbit controls for rotating, panning, and zooming around the model.
+- **Responsive Design**: Modern, dark-themed UI built with Tailwind CSS.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **3D Engine**: [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) (Three.js)
+- **3D Utilities**: [React Three Drei](https://drei.docs.pmnd.rs/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/)
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Clone the repository**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```bash
+   git clone https://github.com/Arkorede/swiftxr-mini-editorr.git
+   cd swiftxr-mini-editorr
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Install dependencies**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+## 🎮 Usage
+
+1. **Upload a Model**: Click the "Choose File" button on the UI to upload a local `.glb` file.
+2. **Add Hotspot**: Click anywhere on the 3D model surface to place a new hotspot pinpoint.
+3. **Edit Hotspot**:
+   - Click on an existing hotspot label to enter edit mode.
+   - Type the new label text.
+   - Click "Save" to confirm.
+   - Click "Cancel" to revert changes.
+4. **Delete Hotspot**: Use the Hotspot Manager panel on the right to remove specific hotspots.
+
+## 📂 Project Structure
+
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+src/
+├── components/
+│   ├── Editor3D.tsx       # Main 3D Canvas and Scene setup
+│   ├── HotSpot.tsx        # Individual Hotspot component with HTML overlays
+│   ├── HotSpotManager.tsx # UI panel for managing list of hotspots
+│   └── ui/                # Shared UI components (inputs, buttons, etc.)
+├── hooks/
+│   └── useHotSpot.tsx     # Custom hook for hotspot state management logic
+├── App.tsx                # Main application entry and layout
+└── main.tsx               # DOM rendering
 ```
