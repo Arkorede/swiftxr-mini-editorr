@@ -6,9 +6,9 @@ import {
   Html,
   PerspectiveCamera,
 } from "@react-three/drei";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect } from "react";
 import { type HotSpotProps } from "./HotSpot";
-import { Vector3, Group, Mesh } from "three";
+import { Vector3, Mesh } from "three";
 import { HotSpot } from "./HotSpot";
 import { type ThreeEvent } from "@react-three/fiber";
 
@@ -20,18 +20,21 @@ type ModelProps = {
 type EditorProps = {
   modelUrl: string;
   hotspots: HotSpotProps[];
+  editingId: string | null;
   handleAddHotspot: (position: Vector3) => void;
+  onStartEdit: (id: string) => void;
+  onUpdateHotspot: (id: string, label: string) => void;
 };
 
 const Model = ({ url, onHotspotAdd }: ModelProps) => {
   const { scene } = useGLTF(url);
-  const meshRef = useRef<Group>(null);
 
   const handlePointClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     onHotspotAdd(e.point);
   };
 
+  // Cleanup when URL changes
   useEffect(() => {
     return () => {
       if (scene) {
@@ -52,7 +55,7 @@ const Model = ({ url, onHotspotAdd }: ModelProps) => {
   }, [scene]);
 
   return (
-    <group ref={meshRef} onClick={handlePointClick}>
+    <group onClick={handlePointClick}>
       <primitive object={scene} />
     </group>
   );
@@ -72,6 +75,9 @@ export const Editor3D = ({
   modelUrl,
   hotspots,
   handleAddHotspot,
+  editingId,
+  onUpdateHotspot,
+  onStartEdit,
 }: EditorProps) => {
   if (!modelUrl) {
     return (
@@ -93,7 +99,7 @@ export const Editor3D = ({
           far: 1000,
         }}
         gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-        className="w-full h-screen"
+        className="w-full h-screen outline-none"
       >
         <color attach="background" args={["#0f172a"]} />
         <ambientLight intensity={0.6} />
@@ -114,6 +120,9 @@ export const Editor3D = ({
             position={hotspot.position}
             id={hotspot.id}
             label={hotspot.label}
+            isEditing={editingId === hotspot.id}
+            onStartEdit={() => onStartEdit(hotspot.id)}
+            onUpdateLabel={(label) => onUpdateHotspot(hotspot.id, label)}
           />
         ))}
 

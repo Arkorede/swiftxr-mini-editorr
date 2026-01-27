@@ -8,12 +8,18 @@ export default function App() {
   const [uploadedFile, setUploadedFile] = useState<string>("");
   const {
     hotspots,
+    editingId,
     handleAddHotspot,
     handleUpdateHotspot,
     handleDeleteHotspot,
+    handleStartEdit,
+    handleCancelEdit,
+    handleCloseEdit,
+    clearHotspots,
   } = useHotSpot();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    clearHotspots();
     const file = event.target.files?.[0];
 
     if (file) {
@@ -31,7 +37,10 @@ export default function App() {
         <Editor3D
           modelUrl={uploadedFile}
           hotspots={hotspots}
+          editingId={editingId}
           handleAddHotspot={handleAddHotspot}
+          onStartEdit={handleStartEdit}
+          onUpdateHotspot={handleUpdateHotspot}
         />
       </div>
 
@@ -48,7 +57,7 @@ export default function App() {
               </label>
               <Input
                 type="file"
-                accept=".glb,.gltf"
+                accept=".glb"
                 onChange={handleFileUpload}
                 className="text-sm text-white file:text-white cursor-pointer"
               />
@@ -70,6 +79,10 @@ export default function App() {
       <div className="absolute bottom-0 right-0 z-20 max-h-screen overflow-auto">
         <HotspotManager
           hotspots={hotspots}
+          editingId={editingId}
+          onStartEdit={handleStartEdit}
+          onSaveEdit={handleCloseEdit}
+          onCancelEdit={handleCancelEdit}
           onUpdateHotspot={handleUpdateHotspot}
           onDeleteHotspot={handleDeleteHotspot}
         />

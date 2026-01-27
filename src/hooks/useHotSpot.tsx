@@ -4,6 +4,8 @@ import { Vector3 } from "three";
 
 export const useHotSpot = () => {
   const [hotspots, setHotspots] = useState<HotSpotProps[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [originalLabel, setOriginalLabel] = useState<string>("");
 
   const handleAddHotspot = (position: Vector3) => {
     const newHotspot: HotSpotProps = {
@@ -22,10 +24,43 @@ export const useHotSpot = () => {
     setHotspots(hotspots.filter((h) => h.id !== id));
   };
 
+  const handleStartEdit = (id: string) => {
+    const hotspot = hotspots.find((h) => h.id === id);
+    if (hotspot) {
+      setOriginalLabel(hotspot.label);
+      setEditingId(id);
+    }
+  };
+
+  const handleCloseEdit = () => {
+    setEditingId(null);
+    setOriginalLabel("");
+  };
+
+  const handleCancelEdit = () => {
+    if (editingId && originalLabel) {
+      handleUpdateHotspot(editingId, originalLabel);
+    }
+    handleCloseEdit();
+  };
+
+  const clearHotspots = () => {
+    setHotspots([]);
+    setEditingId(null);
+    setOriginalLabel("");
+  };
+
   return {
     hotspots,
+    setHotspots,
+    editingId,
+    setEditingId,
     handleAddHotspot,
     handleUpdateHotspot,
     handleDeleteHotspot,
+    handleStartEdit,
+    handleCancelEdit,
+    handleCloseEdit,
+    clearHotspots,
   };
 };

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2 } from "lucide-react";
@@ -7,35 +6,23 @@ import { type HotSpotProps } from "./HotSpot";
 
 interface HotspotManagerProps {
   hotspots: HotSpotProps[];
+  editingId: string | null;
+  onStartEdit: (id: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
   onUpdateHotspot: (id: string, label: string) => void;
   onDeleteHotspot: (id: string) => void;
 }
 
 export const HotspotManager = ({
   hotspots,
+  editingId,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
   onUpdateHotspot,
   onDeleteHotspot,
 }: HotspotManagerProps) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingLabel, setEditingLabel] = useState<string>("");
-
-  const startEdit = (id: string, currentLabel: string) => {
-    setEditingId(id);
-    setEditingLabel(currentLabel);
-  };
-
-  const saveEdit = (id: string) => {
-    if (editingLabel.trim()) {
-      onUpdateHotspot(id, editingLabel.trim());
-    }
-    setEditingId(null);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditingLabel("");
-  };
-
   return (
     <div className="w-full md:w-80 bg-slate-900 border-l border-slate-700 flex flex-col overflow-hidden">
       <div className="p-4 border-b border-slate-700 bg-slate-800">
@@ -61,8 +48,10 @@ export const HotspotManager = ({
               {editingId === hotspot.id ? (
                 <div className="space-y-2">
                   <Input
-                    value={editingLabel}
-                    onChange={(e) => setEditingLabel(e.target.value)}
+                    value={hotspot.label}
+                    onChange={(e) =>
+                      onUpdateHotspot(hotspot.id, e.target.value)
+                    }
                     placeholder="Label"
                     className="text-sm text-white"
                     autoFocus
@@ -71,7 +60,7 @@ export const HotspotManager = ({
                     <Button
                       size="sm"
                       variant="default"
-                      onClick={() => saveEdit(hotspot.id)}
+                      onClick={onSaveEdit}
                       className="flex-1 text-xs"
                     >
                       Save
@@ -79,7 +68,7 @@ export const HotspotManager = ({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={cancelEdit}
+                      onClick={onCancelEdit}
                       className="flex-1 text-xs bg-red-400 text-white border-0"
                     >
                       Cancel
@@ -110,7 +99,7 @@ export const HotspotManager = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => startEdit(hotspot.id, hotspot.label)}
+                    onClick={() => onStartEdit(hotspot.id)}
                     className="w-full text-xs"
                   >
                     Edit Label
