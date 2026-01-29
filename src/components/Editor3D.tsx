@@ -16,6 +16,7 @@ type ModelProps = {
   url: string;
   onHotspotAdd: (position: Vector3) => void;
   autoFitCamera?: boolean;
+  modelScale?: number;
 };
 
 type EditorProps = {
@@ -31,7 +32,12 @@ type EditorProps = {
   autoFitCamera?: boolean;
 };
 
-const Model = ({ url, onHotspotAdd, autoFitCamera = true }: ModelProps) => {
+const Model = ({
+  url,
+  onHotspotAdd,
+  autoFitCamera = true,
+  modelScale = 1,
+}: ModelProps) => {
   const { scene } = useGLTF(url);
   const { camera, controls } = useThree();
   const hasFitCamera = useRef(false);
@@ -45,22 +51,29 @@ const Model = ({ url, onHotspotAdd, autoFitCamera = true }: ModelProps) => {
     if (!scene || !autoFitCamera || hasFitCamera.current) return;
 
     hasFitCamera.current = true;
+
     const box = new Box3().setFromObject(scene);
     const center = box.getCenter(new Vector3());
     const size = box.getSize(new Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
+    const maxDim = Math.max(size.x, size.y, size.z) * modelScale;
+    const scaledCenter = center.clone().multiplyScalar(modelScale);
+
     const fov = 50;
     const cameraDistance = maxDim / (2 * Math.tan((fov * Math.PI) / 360));
 
-    camera.position.set(center.x, center.y, center.z + cameraDistance * 2.5);
-    camera.lookAt(center);
+    camera.position.set(
+      scaledCenter.x,
+      scaledCenter.y,
+      scaledCenter.z + cameraDistance * 2.5,
+    );
+    camera.lookAt(scaledCenter);
     camera.updateProjectionMatrix();
 
     if (controls) {
-      (controls as any).target.copy(center);
+      (controls as any).target.copy(scaledCenter);
       (controls as any).update();
     }
-  }, [scene, autoFitCamera]);
+  }, [scene, autoFitCamera, modelScale]);
 
   useEffect(() => {
     hasFitCamera.current = false;
@@ -152,6 +165,7 @@ export const Editor3D = ({
               url={modelUrl}
               onHotspotAdd={handleAddHotspot}
               autoFitCamera={autoFitCamera}
+              modelScale={modelScale}
             />
           </group>
         </Suspense>
