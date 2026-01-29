@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Editor3D } from "./components/Editor3D";
 import { HotspotManager } from "./components/HotSpotManager";
+import { GrapesJSEditor } from "./components/GrapesJSEditor";
 import { useHotSpot } from "./hooks/useHotSpot";
 
 export default function App() {
   const [uploadedFile, setUploadedFile] = useState<string>("");
+  const [editorMode, setEditorMode] = useState<"3d" | "grapesjs">("grapesjs");
+
   const {
     hotspots,
     editingId,
@@ -30,6 +34,22 @@ export default function App() {
       setUploadedFile(url);
     }
   };
+
+  if (editorMode === "grapesjs") {
+    return (
+      <div className="relative w-full h-screen">
+        <div className="absolute top-0 right-1/2 z-50">
+          <Button
+            onClick={() => setEditorMode("3d")}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Switch to Original 3D Editor
+          </Button>
+        </div>
+        <GrapesJSEditor />
+      </div>
+    );
+  }
 
   return (
     <main className="w-full h-screen bg-linear-to-b from-slate-900 to-slate-800 relative">
@@ -62,6 +82,13 @@ export default function App() {
                 className="text-sm text-white file:text-white cursor-pointer"
               />
             </div>
+
+            <Button
+              onClick={() => setEditorMode("grapesjs")}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Switch to GrapesJS Editor
+            </Button>
 
             <div className="text-xs text-slate-400 bg-slate-700 p-2 rounded">
               <h4 className="font-semibold mb-1">Controls:</h4>

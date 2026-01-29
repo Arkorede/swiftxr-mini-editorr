@@ -1,4 +1,4 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
   useGLTF,
@@ -6,15 +6,16 @@ import {
   Html,
   PerspectiveCamera,
 } from "@react-three/drei";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { type HotSpotProps } from "./HotSpot";
-import { Vector3, Mesh } from "three";
+import { Vector3, Mesh, Box3 } from "three";
 import { HotSpot } from "./HotSpot";
 import { type ThreeEvent } from "@react-three/fiber";
 
 type ModelProps = {
   url: string;
   onHotspotAdd: (position: Vector3) => void;
+  autoFitCamera?: boolean;
 };
 
 type EditorProps = {
@@ -24,15 +25,46 @@ type EditorProps = {
   handleAddHotspot: (position: Vector3) => void;
   onStartEdit: (id: string) => void;
   onUpdateHotspot: (id: string, label: string) => void;
+  backgroundColor?: string;
+  modelScale?: number;
+  cameraPosition?: [number, number, number];
+  autoFitCamera?: boolean;
 };
 
-const Model = ({ url, onHotspotAdd }: ModelProps) => {
+const Model = ({ url, onHotspotAdd, autoFitCamera = true }: ModelProps) => {
   const { scene } = useGLTF(url);
+  const { camera, controls } = useThree();
+  const hasFitCamera = useRef(false);
 
   const handlePointClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     onHotspotAdd(e.point);
   };
+
+  useEffect(() => {
+    if (!scene || !autoFitCamera || hasFitCamera.current) return;
+
+    hasFitCamera.current = true;
+    const box = new Box3().setFromObject(scene);
+    const center = box.getCenter(new Vector3());
+    const size = box.getSize(new Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = 50;
+    const cameraDistance = maxDim / (2 * Math.tan((fov * Math.PI) / 360));
+
+    camera.position.set(center.x, center.y, center.z + cameraDistance * 2.5);
+    camera.lookAt(center);
+    camera.updateProjectionMatrix();
+
+    if (controls) {
+      (controls as any).target.copy(center);
+      (controls as any).update();
+    }
+  }, [scene, autoFitCamera]);
+
+  useEffect(() => {
+    hasFitCamera.current = false;
+  }, [url]);
 
   // Cleanup when URL changes
   useEffect(() => {
@@ -78,6 +110,10 @@ export const Editor3D = ({
   editingId,
   onUpdateHotspot,
   onStartEdit,
+  backgroundColor = "#0f172a",
+  modelScale = 1,
+  cameraPosition = [0, 0, 5],
+  autoFitCamera = true,
 }: EditorProps) => {
   if (!modelUrl) {
     return (
@@ -90,28 +126,34 @@ export const Editor3D = ({
   }
 
   return (
-    <div className="w-full h-screen flex flex-col relative">
+    <div className="w-full h-full flex flex-col relative">
       <Canvas
         camera={{
-          position: [0, 0, 5],
+          position: cameraPosition,
           fov: 50,
           near: 0.1,
           far: 1000,
         }}
         gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-        className="w-full h-screen outline-none"
+        className="w-full h-full outline-none"
       >
-        <color attach="background" args={["#0f172a"]} />
+        <color attach="background" args={[backgroundColor]} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} />
         <pointLight position={[-10, -10, -5]} intensity={0.4} />
 
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+        <PerspectiveCamera makeDefault position={cameraPosition} fov={50} />
 
         <Environment preset="studio" />
 
         <Suspense fallback={<LoadingFallback />}>
-          <Model url={modelUrl} onHotspotAdd={handleAddHotspot} />
+          <group scale={modelScale}>
+            <Model
+              url={modelUrl}
+              onHotspotAdd={handleAddHotspot}
+              autoFitCamera={autoFitCamera}
+            />
+          </group>
         </Suspense>
 
         {hotspots.map((hotspot) => (
@@ -128,7 +170,7 @@ export const Editor3D = ({
 
         <OrbitControls
           autoRotate={false}
-          enableDamping={true}
+          enableDamping={false}
           dampingFactor={0.05}
           enablePan={true}
           enableZoom={true}
