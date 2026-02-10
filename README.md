@@ -49,7 +49,7 @@ A powerful, dual-mode 3D editor combining a pure React 3D viewer with a GrapesJS
 1.  **Clone the repository**:
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/Arkorede/swiftxr-mini-editorr.git
     cd swiftxr-mini-editorr
     ```
 
